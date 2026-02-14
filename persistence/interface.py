@@ -8,26 +8,26 @@ class StorageInterface(ABC):
     """
 
     @abstractmethod
-    async def save(self, key: str, value: Any) -> None:
-        """Saves a value with the given key."""
+    async def save(self, container: str, key: str, value: Any) -> None:
+        """Saves a value with the given key in a specific container."""
         pass
 
     @abstractmethod
-    async def get(self, key: str) -> Optional[Any]:
-        """Retrieves a value by its key."""
+    async def get(self, container: str, key: str) -> Optional[Any]:
+        """Retrieves a value by its key from a specific container."""
         pass
 
     @abstractmethod
-    async def delete(self, key: str) -> bool:
-        """Deletes a value by its key. Returns True if deleted, False otherwise."""
+    async def delete(self, container: str, key: str) -> bool:
+        """Deletes a value by its key from a specific container. Returns True if deleted, False otherwise."""
         pass
 
     @abstractmethod
-    async def list_all(self) -> Dict[str, Any]:
-        """Returns all stored key-value pairs."""
+    async def list_all(self, container: str) -> Dict[str, Any]:
+        """Returns all stored key-value pairs in a specific container."""
         pass
 
     @abstractmethod
-    async def exists(self, key: str) -> bool:
-        """Checks if a key exists in storage."""
+    async def exists(self, container: str, key: str) -> bool:
+        """Checks if a key exists in a specific container."""
         pass
