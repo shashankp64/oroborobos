@@ -1,7 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.responses import FileResponse
+from typing import Dict, Any, Optional
+from persistence.memory import MemoryStorage
 
 app = FastAPI(title="Skeleton FastAPI App")
+
+# Persistence layer instance
+storage = MemoryStorage()
+
+# Dependency to get storage instance
+def get_storage():
+    return storage
 
 @app.get("/")
 def read_index():
@@ -21,6 +30,30 @@ def status():
         "status": "operational",
         "service": "skeleton-api"
     }
+
+@app.post("/data/{key}")
+async def save_data(key: str, value: Dict[str, Any], store: MemoryStorage = Depends(get_storage)):
+    await store.save(key, value)
+    return {"message": f"Data saved for {key}"}
+
+@app.get("/data/{key}")
+async def get_data(key: str, store: MemoryStorage = Depends(get_storage)):
+    data = await store.get(key)
+    if data is None:
+        return {"error": "Not found"}, 404
+    return data
+
+@app.get("/data")
+async def list_data(store: MemoryStorage = Depends(get_storage)):
+    return await store.list_all()
+
+@app.delete("/data/{key}")
+async def delete_data(key: str, store: MemoryStorage = Depends(get_storage)):
+    deleted = await store.delete(key)
+    if not deleted:
+        return {"error": "Not found"}, 404
+    return {"message": f"Data deleted for {key}"}
+
 
 if __name__ == "__main__":
     import uvicorn
