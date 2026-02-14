@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
 from .interface import StorageInterface
+from .exceptions import ContainerNotFoundError
 
 class MemoryStorage(StorageInterface):
     """
@@ -29,6 +30,8 @@ class MemoryStorage(StorageInterface):
         return False
 
     async def list_all(self, container: str) -> Dict[str, Any]:
+        if container not in self._data:
+            raise ContainerNotFoundError(container)
         return self._data.get(container, {}).copy()
 
     async def exists(self, container: str, key: str) -> bool:
